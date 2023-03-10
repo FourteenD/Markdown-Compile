@@ -17,7 +17,7 @@ const rules = [
   },
 ];
 
-
+// 词法解析和
 function lexer(md) {
   const tokens = [];
   let index = 0;
