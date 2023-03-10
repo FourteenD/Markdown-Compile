@@ -11,9 +11,9 @@ const rules = [
   {
     name: 'header',
     reg: /^#{1,6}\s+(.*)$/,
-    replace: (match, $1) => {
+    replace: (match, value) => {
       const len = match.split('')[0].length;
-      return `<h${len}>${$1}</h${len}>`;
+      return `<h${len}>${value}</h${len}>`;
     }
   }
 ]
