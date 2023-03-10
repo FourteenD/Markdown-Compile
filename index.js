@@ -7,7 +7,6 @@ const md = fs.readFileSync(path.resolve(__dirname, 'test.md'), 'utf-8');
 
 // 规则
 const rules = [
-  // 标题
   {
     name: 'heading',
     reg: /^#{1,6} .+$/gm,
@@ -17,71 +16,68 @@ const rules = [
       return `<h${level}>${text}</h${level}>`;
     }
   },
-  // // 引用
-  // {
-  //   name: 'blockquote',
-  //   reg: /^> .+$/gm,
-  //   replace: (content) => {
-  //     const text = content.replace(/^> /, '');
-  //     return `<blockquote>${text}</blockquote>`;
-  //   }
-  // },
-  // // 链接
-  // {
-  //   name: 'link',
-  //   reg: /\[[^\]]+\]\([^\)]+\)/g,
-  //   replace: (content) => {
-  //     const text = content.match(/\[([^\]]+)\]/)[1];
-  //     const href = content.match(/\(([^\)]+)\)/)[1];
-  //     return `<a href="${href}">${text}</a>`;
-  //   }
-  // },
-  // // 代码
-  // {
-  //   name: 'code',
-  //   reg: /`[^`]+`/g,
-  //   replace: (content) => {
-  //     const text = content.replace(/`/g, '');
-  //     return `<code>${text}</code>`;
-  //   }
-  // },
-  // // 图片
-  // {
-  //   name: 'image',
-  //   reg: /!\[[^\]]+\]\([^\)]+\)/g,
-  //   replace: (content) => {
-  //     const text = content.match(/\[([^\]]+)\]/)[1];
-  //     const src = content.match(/\(([^\)]+)\)/)[1];
-  //     return `<img src="${src}" alt="${text}">`;
-  //   }
-  // },
-  // // 列表
-  // {
-  //   name: 'list',
-  //   reg: /^(\s*)(\d+\.|-) .+$/gm,
-  //   replace: (content) => {
-  //     const space = content.match(/^(\s*)/)[0];
-  //     const level = space.length / 2;
-  //     const text = content.replace(/^(\s*)(\d+\.|-) /, '');
-  //     const isOrder = content.match(/^(\s*)(\d+\.|-)/)[2] === '.';
-  //     const tag = isOrder ? 'ol' : 'ul';
-  //     return `<${tag} level="${level}"><li>${text}</li></${tag}>`;
-  //   }
-  // },
-  // // 段落
-  // {
-  //   name: 'paragraph',
-  //   reg: /^[^#*!-].+$/gm,
-  //   replace: (content) => {
-  //     return `<p>${content}</p>`;
-  //   }
-  // },
+  {
+    name: 'list',
+    reg: /^(\d+\.|-|\*) .+$/gm,
+    replace: (content) => {
+      const list = content.match(/(\d+\.|-|\*)/)[0];
+      const text = content.replace(/(\d+\.|-|\*)/, '');
+      if (list === '-') {
+        return `<li>${text}</li>`;
+      } else {
+        return `<li>${text}</li>`;
+      }
+    }
+  },
+  {
+    name: 'code',
+    reg: /^```[\s\S]+?```$/gm,
+    replace: (content) => {
+      const code = content.replace(/^```/, '').replace(/```$/, '');
+      return `<pre><code>${code}</code></pre>`;
+    }
+  },
+  {
+    name: 'blockquote',
+    reg: /^> .+$/gm,
+    replace: (content) => {
+      const text = content.replace(/^> /, '');
+      return `<blockquote>${text}</blockquote>`;
+    }
+  },
+
 ];
 
 // 词法解析和语法解析
 function lexer(md) {
   const tokens = [];
-  console.log(md.split(/\r/));
+  let lastIndex = 0;
+  for (let i = 0; i < rules.length; i++) {
+    const rule = rules[i];
+    const reg = rule.reg;
+    let match;
+    while (match = reg.exec(md)) {
+      const index = match.index;
+      if (index > lastIndex) {
+        tokens.push({
+          type: 'text',
+          content: md.slice(lastIndex, index)
+        });
+      }
+      tokens.push({
+        type: rule.name,
+        content: match[0]
+      });
+      lastIndex = index + match[0].length;
+    }
+  }
+  if (lastIndex < md.length) {
+    tokens.push({
+      type: 'text',
+      content: md.slice(lastIndex)
+    });
+  }
+  console.log(tokens);
 
   return tokens;
 }
