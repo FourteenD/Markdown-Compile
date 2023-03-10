@@ -9,5 +9,11 @@ const md = fs.readFileSync(path.resolve(__dirname, 'test.md'), 'utf-8');
 const rules = [
   // 标题
   {
+    name: 'header',
+    reg: /^#{1,6}\s+(.*)$/,
+    replace: (match, $1) => {
+      const len = match.split('')[0].length;
+      return `<h${len}>${$1}</h${len}>`;
+    }
   }
 ]
