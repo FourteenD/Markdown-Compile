@@ -17,15 +17,15 @@ const rules = [
       return `<h${level}>${text}</h${level}>`;
     }
   },
-  // 引用
-  {
-    name: 'blockquote',
-    reg: /^> .+$/gm,
-    replace: (content) => {
-      const text = content.replace(/^> /, '');
-      return `<blockquote>${text}</blockquote>`;
-    }
-  },
+  // // 引用
+  // {
+  //   name: 'blockquote',
+  //   reg: /^> .+$/gm,
+  //   replace: (content) => {
+  //     const text = content.replace(/^> /, '');
+  //     return `<blockquote>${text}</blockquote>`;
+  //   }
+  // },
   // // 链接
   // {
   //   name: 'link',
@@ -78,32 +78,11 @@ const rules = [
   // },
 ];
 
-// 词法解析和
+// 词法解析和语法解析
 function lexer(md) {
   const tokens = [];
-  let index = 0;
-  while (index < md.length) {
-    let match = false;
-    for (let i = 0; i < rules.length; i++) {
-      const rule = rules[i];
-      const reg = rule.reg;
-      reg.lastIndex = index;
-      const result = reg.exec(md);
-      if (result) {
-        match = true;
-        const token = {
-          type: rule.name,
-          content: result[0],
-        };
-        tokens.push(token);
-        index += result[0].length;
-        break;
-      }
-    }
-    if (!match) {
-      index++;
-    }
-  }
+  console.log(md.split(/\r/));
+
   return tokens;
 }
 
