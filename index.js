@@ -45,7 +45,62 @@ const rules = [
       return `<blockquote>${text}</blockquote>`;
     }
   },
-
+  {
+    name: 'hr',
+    reg: /^---$/gm,
+    replace: () => {
+      return `<hr/>`;
+    }
+  },
+  {
+    name: 'strong',
+    reg: /\*\*[\s\S]+?\*\*/gm,
+    replace: (content) => {
+      const text = content.replace(/\*\*/, '');
+      return `<strong>${text}</strong>`;
+    }
+  },
+  {
+    name: 'em',
+    reg: /_([\s\S]+?)_/gm,
+    replace: (content) => {
+      const text = content.replace(/_/, '');
+      return `<em>${text}</em>`;
+    }
+  },
+  {
+    name: 'a',
+    reg: /\[([\s\S]+?)\]\(([\s\S]+?)\)/gm,
+    replace: (content) => {
+      const text = content.match(/\[([\s\S]+?)\]/)[1];
+      const href = content.match(/\(([\s\S]+?)\)/)[1];
+      return `<a href="${href}">${text}</a>`;
+    }
+  },
+  {
+    name: 'img',
+    reg: /!\[([\s\S]+?)\]\(([\s\S]+?)\)/gm,
+    replace: (content) => {
+      const text = content.match(/\[([\s\S]+?)\]/)[1];
+      const src = content.match(/\(([\s\S]+?)\)/)[1];
+      return `<img src="${src}" alt="${text}"/>`;
+    }
+  },
+  {
+    name: 'p',
+    reg: /^[\s\S]+$/gm,
+    replace: (content) => {
+      return `<p>${content}</p>`;
+    }
+  },
+  {
+    name: 'del',
+    reg: /~~([\s\S]+?)~~/gm,
+    replace: (content) => {
+      const text = content.replace(/~~/, '');
+      return `<del>${text}</del>`;
+    }
+  }
 ];
 
 // 词法解析和语法解析
